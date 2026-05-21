@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Harga Produk</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#b30000,#ff1a1a,#ff4d4d);
+margin:0;
+padding:20px
+}
+
+.container{
+max-width:700px;
+margin:auto;
+background:#fff;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.3);
+position:relative
+}
+
+h1{
+text-align:center;
+font-size:35px;
+font-weight:bold;
+margin-bottom:20px;
+background:linear-gradient(90deg,#ff0000,#ff9900,#ff0000);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+text-shadow:2px 2px 10px rgba(0,0,0,.3);
+letter-spacing:2px;
+animation:nyala 2s infinite alternate;
+}
+
+@keyframes nyala{
+from{transform:scale(1)}
+to{transform:scale(1.05)}
+}
+
+.tambah{
+position:absolute;
+top:15px;
+right:15px;
+width:45px;
+height:45px;
+border-radius:50%;
+font-size:25px;
+background:#c40000;
+color:white;
+border:none;
+cursor:pointer
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:10px;
+border:1px solid #ccc
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:10px;
+cursor:pointer
+}
+
+.simpan{
+background:#c40000;
+color:white;
+width:100%
+}
+
+.tutup{
+background:red;
+color:white;
+width:100%
+}
+
+.fileBtn{
+background:#ff4d4d;
+color:white
+}
+
+.card{
+background:#f5f5f5;
+padding:15px;
+border-radius:15px;
+margin-top:15px;
+position:relative
+}
+
+.card img{
+width:100%;
+border-radius:12px;
+max-height:250px;
+object-fit:cover
+}
+
+.harga{
+color:#c40000;
+font-weight:bold;
+font-size:18px
+}
+
+.ket{
+color:gray
+}
+
+.hapus{
+position:absolute;
+top:10px;
+left:10px;
+background:red;
+color:white;
+width:35px;
+height:35px;
+border-radius:50%
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔥 DAFTAR HARGA PRODUK 🔥</h1>
+
+<button class="tambah" onclick="toggleForm()">+</button>
+
+<div id="formProduk" style="display:none">
+
+<h3>Tambah Produk</h3>
+
+<input type="file" id="foto">
+<input type="text" id="nama" placeholder="Nama Barang">
+<input type="text" id="harga" placeholder="Harga">
+<textarea id="ket" placeholder="Keterangan"></textarea>
+
+<button class="simpan" onclick="tambahProduk()">Simpan Produk</button>
+
+<button class="tutup" onclick="toggleForm()">✖ Tutup</button>
+
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px">
+
+<button class="fileBtn" onclick="gantiFile(1)">WARDROBE</button>
+<button class="fileBtn" onclick="gantiFile(2)">DINING</button>
+<button class="fileBtn" onclick="gantiFile(3)">CAFE RESTO</button>
+<button class="fileBtn" onclick="gantiFile(4)">LIVING</button>
+<button class="fileBtn" onclick="gantiFile(5)">OFFICEE</button>
+<button class="fileBtn" onclick="gantiFile(6)">DRESSER</button>
+<button class="fileBtn" onclick="gantiFile(7)">DLL</button>
+
+</div>
+
+<h3 id="judulFile">📁 File 1</h3>
+
+<div id="listProduk"></div>
+
+</div>
+
+<script>
+
+let fileAktif=1;
+
+let dataProduk={
+1:[],
+2:[],
+3:[],
+4:[],
+5:[],
+6:[],
+7:[]
+};
+
+function gantiFile(no){
+fileAktif=no;
+document.getElementById(
+"judulFile"
+).innerText="prodak"+no;
+
+renderProduk();
+}
+
+function toggleForm(){
+let f=document.getElementById(
+'formProduk'
+);
+
+f.style.display=
+f.style.display=="none"?
+"block":"none";
+}
+
+function tambahProduk(){
+
+let nama=
+document.getElementById(
+"nama"
+).value;
+
+let harga=
+document.getElementById(
+"harga"
+).value;
+
+let ket=
+document.getElementById(
+"ket"
+).value;
+
+let foto=
+document.getElementById(
+"foto"
+).files[0];
+
+if(!nama||!harga){
+alert("Isi nama dan harga");
+return;
+}
+
+function simpan(gambar){
+
+dataProduk[fileAktif]
+.push({
+
+nama:nama,
+harga:harga,
+ket:ket,
+gambar:gambar
+
+});
+
+renderProduk();
+
+nama.value="";
+}
+
+if(foto){
+
+let reader=
+new FileReader();
+
+reader.onload=function(e){
+
+simpan(
+e.target.result
+);
+
+};
+
+reader.readAsDataURL(
+foto
+);
+
+}else{
+
+simpan("");
+
+}
+
+document.getElementById("nama").value="";
+document.getElementById("harga").value="";
+document.getElementById("ket").value="";
+document.getElementById("foto").value="";
+
+}
+
+function renderProduk(){
+
+let html="";
+
+dataProduk[fileAktif]
+.forEach((item,i)=>{
+
+html+=`
+
+<div class="card">
+
+<button class="hapus"
+onclick="hapusItem(${i})">
+
+✖
+
+</button>
+
+${item.gambar?
+`<img src="${item.gambar}">`
+:""}
+
+<h3>${item.nama}</h3>
+
+<p class="harga">
+${item.harga}
+</p>
+
+<p class="ket">
+${item.ket}
+</p>
+
+</div>
+
+`;
+
+});
+
+document
+.getElementById(
+"listProduk"
+).innerHTML=html;
+
+}
+
+function hapusItem(i){
+
+if(confirm(
+"Hapus produk?"
+)){
+
+dataProduk[fileAktif]
+.splice(i,1);
+
+renderProduk();
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
